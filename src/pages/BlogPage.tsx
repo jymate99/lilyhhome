@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -21,9 +21,11 @@ type BlogPost = {
 };
 
 function BlogPage() {
+  const location = useLocation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -45,6 +47,17 @@ function BlogPage() {
     fetchPosts();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+      // Clear the message after 3 seconds
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16">
@@ -55,6 +68,13 @@ function BlogPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
+      {/* Success Message */}
+      {message && (
+        <div className="mb-6 bg-green-50 text-green-600 p-4 rounded-lg text-center">
+          {message}
+        </div>
+      )}
+
       {/* Header */}
       <div className="text-center mb-16">
         <h1 className="text-4xl font-bold mb-6">Real Estate Insights</h1>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Calendar, Edit, Save, X } from 'lucide-react';
+import { Calendar, Edit, Save, X, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -88,6 +88,29 @@ const BlogViewPage = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const { error: deleteError } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) throw deleteError;
+
+      navigate('/blog', { 
+        replace: true,
+        state: { message: 'Post deleted successfully' }
+      });
+    } catch (err) {
+      setError('Failed to delete post');
+      console.error('Error:', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16">
@@ -129,13 +152,22 @@ const BlogViewPage = () => {
               </button>
             </>
           ) : (
-            <button
-              onClick={handleEdit}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Post
-            </button>
+            <>
+              <button
+                onClick={handleEdit}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Post
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </button>
+            </>
           )}
         </div>
       )}
