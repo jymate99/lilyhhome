@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { Home, User, BookOpen, Mail, Menu, X } from 'lucide-react';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Home, User, BookOpen, Mail, Menu, X, MoveRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import HomePage from '../pages/HomePage';
 import AboutPage from '../pages/AboutPage';
@@ -14,11 +14,17 @@ import BlogViewPage from '../pages/BlogViewPage';
 const AppContent = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
@@ -62,12 +68,12 @@ const AppContent = () => {
                   </button>
                 </div>
               ) : (
-                <Link 
-                  to="/login" 
-                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-600"
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-gray-700 hover:text-blue-600"
                 >
-                  <span>Login</span>
-                </Link>
+                  Sign in
+                </button>
               )}
             </div>
 
@@ -132,13 +138,12 @@ const AppContent = () => {
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/login"
+                <button
+                  onClick={() => navigate('/login')}
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600"
-                  onClick={toggleMenu}
                 >
                   Login
-                </Link>
+                </button>
               )}
             </div>
           </div>
