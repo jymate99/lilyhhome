@@ -8,10 +8,16 @@ type BlogPost = {
   id: string;
   title: string;
   excerpt: string;
+  content: string;
   image_url: string;
   category: string;
   created_at: string;
   author_id: string;
+  price: number;
+  location: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
 };
 
 function BlogPage() {
@@ -109,19 +115,41 @@ function BlogPage() {
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <div className="mb-4">
+              <div className="mb-4 flex justify-between items-center">
                 <span className="bg-blue-100 text-blue-600 text-sm px-3 py-1 rounded-full">
                   {post.category}
+                </span>
+                <span className="text-green-600 font-bold">
+                  ${post.price.toLocaleString()}
                 </span>
               </div>
               <h3 className="text-xl font-bold mb-2">{post.title}</h3>
               <p className="text-gray-600 mb-4">{post.excerpt}</p>
+              
+              {/* Property Details */}
+              <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <span className="font-medium">Location:</span>
+                  <span className="ml-2">{post.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium">Area:</span>
+                  <span className="ml-2">{post.sqft.toLocaleString()} sqft</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium">Beds:</span>
+                  <span className="ml-2">{post.bedrooms}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium">Baths:</span>
+                  <span className="ml-2">{post.bathrooms}</span>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </div>
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  {new Date(post.created_at).toLocaleDateString()}
                 </div>
               </div>
             </div>

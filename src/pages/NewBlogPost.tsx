@@ -17,7 +17,12 @@ const NewBlogPost = () => {
     excerpt: '',
     content: '',
     image_url: '',
-    category: ''
+    category: '',
+    price: 0,
+    location: '',
+    bedrooms: 0,
+    bathrooms: 0,
+    sqft: 0
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -160,6 +165,80 @@ const NewBlogPost = () => {
               <option value="Design">Design</option>
               <option value="Market Analysis">Market Analysis</option>
             </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                name="price"
+                required
+                value={formData.price}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                required
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="City, State"
+              />
+            </div>
+            <div>
+              <label htmlFor="sqft" className="block text-sm font-medium text-gray-700 mb-1">
+                Square Feet
+              </label>
+              <input
+                type="number"
+                id="sqft"
+                name="sqft"
+                required
+                value={formData.sqft}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="bedrooms" className="block text-sm font-medium text-gray-700 mb-1">
+                Bedrooms
+              </label>
+              <input
+                type="number"
+                id="bedrooms"
+                name="bedrooms"
+                required
+                value={formData.bedrooms}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="bathrooms" className="block text-sm font-medium text-gray-700 mb-1">
+                Bathrooms
+              </label>
+              <input
+                type="number"
+                id="bathrooms"
+                name="bathrooms"
+                required
+                value={formData.bathrooms}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
           <button

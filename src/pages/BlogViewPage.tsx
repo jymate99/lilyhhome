@@ -15,6 +15,11 @@ type BlogPost = {
   category: string;
   created_at: string;
   author_id: string;
+  price: number;
+  location: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
 };
 
 const BlogViewPage = () => {
@@ -194,6 +199,34 @@ const BlogViewPage = () => {
         </div>
       </div>
 
+      {/* Property Details */}
+      <div className="bg-gray-50 rounded-lg p-6 mb-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div>
+          <div className="text-gray-600 text-sm">Price</div>
+          <div className="text-2xl font-bold text-green-600">
+            ${post.price.toLocaleString()}
+          </div>
+        </div>
+        <div>
+          <div className="text-gray-600 text-sm">Location</div>
+          <div className="font-medium">{post.location}</div>
+        </div>
+        <div>
+          <div className="text-gray-600 text-sm">Area</div>
+          <div className="font-medium">{post.sqft.toLocaleString()} sqft</div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="text-gray-600 text-sm">Beds</div>
+            <div className="font-medium">{post.bedrooms}</div>
+          </div>
+          <div>
+            <div className="text-gray-600 text-sm">Baths</div>
+            <div className="font-medium">{post.bathrooms}</div>
+          </div>
+        </div>
+      </div>
+
       {/* Post Content */}
       {isEditing ? (
         <div className="space-y-4">
@@ -216,6 +249,68 @@ const BlogViewPage = () => {
               rows={12}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 font-mono"
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Price
+              </label>
+              <input
+                type="number"
+                name="price"
+                value={editedPost.price}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={editedPost.location}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Square Feet
+              </label>
+              <input
+                type="number"
+                name="sqft"
+                value={editedPost.sqft}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Bedrooms
+              </label>
+              <input
+                type="number"
+                name="bedrooms"
+                value={editedPost.bedrooms}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Bathrooms
+              </label>
+              <input
+                type="number"
+                name="bathrooms"
+                value={editedPost.bathrooms}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
         </div>
       ) : (
