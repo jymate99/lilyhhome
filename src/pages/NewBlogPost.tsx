@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import { uploadImage } from '../utils/imageUpload';
 
 const NewBlogPost = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const NewBlogPost = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -32,17 +35,32 @@ const NewBlogPost = () => {
     });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
+      if (!imageFile) {
+        throw new Error('Please select an image');
+      }
+
+      const imageUrl = await uploadImage(imageFile);
+
       const { error: submitError } = await supabase
         .from('blog_posts')
         .insert([
           {
             ...formData,
+            image_url: imageUrl,
             author_id: user?.id
           }
         ]);
@@ -134,18 +152,30 @@ const NewBlogPost = () => {
           </div>
 
           <div>
-            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
-              Image URL
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Property Image
             </label>
-            <input
-              type="url"
-              id="image_url"
-              name="image_url"
-              required
-              value={formData.image_url}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="mt-1 flex flex-col items-center">
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-64 object-cover rounded-lg mb-4"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+                className="w-full text-sm text-gray-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100"
+              />
+            </div>
           </div>
 
           <div>

@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { Calendar, Edit, Save, X, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { uploadImage } from '../utils/imageUpload';
 
 type BlogPost = {
   id: string;
@@ -31,6 +32,9 @@ const BlogViewPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedPost, setEditedPost] = useState<Partial<BlogPost>>({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -60,6 +64,8 @@ const BlogViewPage = () => {
   };
 
   const handleCancel = () => {
+    setImageFile(null);
+    setImagePreview('');
     setEditedPost(post || {});
     setIsEditing(false);
   };
@@ -71,20 +77,113 @@ const BlogViewPage = () => {
     });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Create a temporary URL for preview
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      
+      // Update editedPost with temporary preview
+      setEditedPost({
+        ...editedPost,
+        image_url: previewUrl
+      });
+
+      // Clean up the old preview URL when component unmounts
+      return () => URL.revokeObjectURL(previewUrl);
+    }
+  };
+
+  const handleImageDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+
+    try {
+      if (post?.image_url && post.image_url.includes('property-images')) {
+        const oldImagePath = post.image_url.split('/').pop();
+        if (oldImagePath) {
+          const { error: storageError } = await supabase.storage
+            .from('property-images')
+            .remove([oldImagePath]);
+          
+          if (storageError) throw storageError;
+
+          // Update the post to remove the image_url
+          const { error: updateError } = await supabase
+            .from('blog_posts')
+            .update({ image_url: '' })
+            .eq('id', id);
+
+          if (updateError) throw updateError;
+
+          // Update local state
+          setPost({
+            ...post,
+            image_url: ''
+          });
+          setEditedPost({
+            ...editedPost,
+            image_url: ''
+          });
+          setImageFile(null);
+          setImagePreview('');
+        }
+      }
+    } catch (err) {
+      setError('Failed to delete image');
+      console.error('Error:', err);
+    }
+  };
+
   const handleSave = async () => {
     try {
+      setUploadLoading(true);
+      let finalImageUrl = editedPost.image_url;
+
+      if (imageFile) {
+        // Delete old image if it exists and is from our storage
+        if (post?.image_url && post.image_url.includes('property-images')) {
+          const oldImagePath = post.image_url.split('/').pop();
+          if (oldImagePath) {
+            await supabase.storage
+              .from('property-images')
+              .remove([oldImagePath]);
+          }
+        }
+
+        // Upload new image
+        finalImageUrl = await uploadImage(imageFile);
+      }
+
       const { error: updateError } = await supabase
         .from('blog_posts')
-        .update(editedPost)
+        .update({
+          ...editedPost,
+          image_url: finalImageUrl
+        })
         .eq('id', id);
 
       if (updateError) throw updateError;
 
-      setPost(editedPost as BlogPost);
+      // Update local state
+      setPost({
+        ...editedPost,
+        image_url: finalImageUrl
+      } as BlogPost);
+      
+      // Reset image states
+      setImageFile(null);
+      setImagePreview('');
       setIsEditing(false);
     } catch (err) {
       setError('Failed to update blog post');
       console.error('Error:', err);
+    } finally {
+      setUploadLoading(false);
     }
   };
 
@@ -94,6 +193,21 @@ const BlogViewPage = () => {
     }
 
     try {
+      // First delete the image from storage if it exists
+      if (post?.image_url && post.image_url.includes('property-images')) {
+        const oldImagePath = post.image_url.split('/').pop();
+        if (oldImagePath) {
+          const { error: storageError } = await supabase.storage
+            .from('property-images')
+            .remove([oldImagePath]);
+          
+          if (storageError) {
+            console.error('Error deleting image:', storageError);
+          }
+        }
+      }
+
+      // Then delete the post
       const { error: deleteError } = await supabase
         .from('blog_posts')
         .delete()
@@ -138,10 +252,11 @@ const BlogViewPage = () => {
             <>
               <button
                 onClick={handleSave}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                disabled={uploadLoading}
+                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-300"
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                {uploadLoading ? 'Saving...' : 'Save'}
               </button>
               <button
                 onClick={handleCancel}
@@ -175,22 +290,73 @@ const BlogViewPage = () => {
       {/* Hero Image */}
       <div className="relative h-[400px] rounded-lg overflow-hidden mb-8">
         {isEditing ? (
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Image URL</label>
-            <input
-              type="url"
-              name="image_url"
-              value={editedPost.image_url}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">Property Image</label>
+            <div className="mt-1 flex flex-col items-center">
+              {(imagePreview || editedPost.image_url) ? (
+                <div className="relative w-full">
+                  <img
+                    src={imagePreview || editedPost.image_url}
+                    alt="Preview"
+                    className="w-full h-[400px] object-cover rounded-lg mb-4"
+                  />
+                  <div className="absolute top-2 right-2 flex space-x-2">
+                    <label 
+                      className="cursor-pointer bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700"
+                      title="Upload new image"
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                      <Edit className="h-4 w-4" />
+                    </label>
+                    <button
+                      onClick={handleImageDelete}
+                      className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700"
+                      title="Delete image"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full">
+                  <label className="flex flex-col items-center justify-center h-[400px] border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg className="w-12 h-12 mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500">
+                        <span className="font-semibold">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
-          <img
-            src={post.image_url}
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
+          post.image_url ? (
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full bg-gray-100">
+              <p className="text-gray-500">No image available</p>
+            </div>
+          )
         )}
       </div>
 
