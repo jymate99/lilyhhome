@@ -6,7 +6,7 @@ function AboutPage() {
     <div className="max-w-7xl mx-auto px-4 py-16">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold mb-6">About Sarah Johnson</h1>
+        <h1 className="text-4xl font-bold mb-6">About Lily Huang</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Your trusted real estate professional with over 15 years of experience in the luxury property market.
         </p>
@@ -16,7 +16,7 @@ function AboutPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
         <div>
           <img
-            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"
+            src="https://images.unsplash.com/photo-1737202777198-7a913f95aa01?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Sarah Johnson"
             className="rounded-lg shadow-lg w-full h-[500px] object-cover"
           />
