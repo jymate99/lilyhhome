@@ -29,7 +29,7 @@ const AppContent = () => {
             <div className="flex items-center">
               <Link to="/" className="flex items-center space-x-2">
                 <Home className="h-6 w-6 text-blue-600" />
-                <span className="font-bold text-xl text-gray-900">Lily Living</span>
+                <span className="font-bold text-xl text-gray-900">LilyH Living</span>
               </Link>
             </div>
 
