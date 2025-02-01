@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const LoginForm = () => {
@@ -6,6 +7,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +16,9 @@ const LoginForm = () => {
     const { error: signInError } = await signIn(email, password);
     if (signInError) {
       setError(signInError.message);
+    } else {
+      // Redirect to home page on successful login
+      navigate('/', { replace: true });
     }
   };
 
