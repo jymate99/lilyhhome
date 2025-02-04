@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { createClient } from '@supabase/supabase-js';
@@ -65,7 +65,7 @@ function ContactPage() {
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         emailParams,
-        import.meta.env.VITE_EMAILJS_USER_ID
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       );
 
       // Save to Supabase
