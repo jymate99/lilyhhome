@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { createClient } from '@supabase/supabase-js';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -33,6 +34,8 @@ function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaError, setRecaptchaError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -44,9 +47,16 @@ function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!recaptchaToken) {
+      setRecaptchaError('Please verify you are not a robot');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError('');
     setSubmitSuccess(false);
+    setRecaptchaError('');
 
     try {
       // Send email via EmailJS
@@ -59,6 +69,7 @@ function ContactPage() {
         price_range: formData.priceRange,
         pre_approval: formData.preApproval,
         message: formData.message,
+        'g-recaptcha-response': recaptchaToken,
       };
 
       await emailjs.send(
@@ -263,6 +274,20 @@ function ContactPage() {
                 placeholder="Tell me about your real estate needs..."
               ></textarea>
             </div>
+
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={(token) => {
+                setRecaptchaToken(token);
+                setRecaptchaError('');
+              }}
+              className="mb-4"
+            />
+            {recaptchaError && (
+              <div className="p-4 bg-red-100 text-red-700 rounded-lg">
+                {recaptchaError}
+              </div>
+            )}
 
             {/* Add status messages */}
             {submitSuccess && (
