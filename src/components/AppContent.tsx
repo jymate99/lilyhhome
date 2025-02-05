@@ -266,7 +266,7 @@ const AppContent = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">LuxuryHomes</h3>
+              <h3 className="text-lg font-semibold mb-4">Lily Home</h3>
               <p className="text-gray-300">Your trusted partner in finding the perfect home.</p>
             </div>
             <div>
@@ -285,7 +285,7 @@ const AppContent = () => {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
-            <p>&copy; 2024 LuxuryHomes. All rights reserved.</p>
+            <p>&copy; 2024 LilyHome. All rights reserved.</p>
           </div>
         </div>
       </footer>
