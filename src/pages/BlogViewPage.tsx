@@ -373,6 +373,7 @@ const BlogViewPage = () => {
               <option value="Investment">Investment</option>
               <option value="Design">Design</option>
               <option value="Market Analysis">Market Analysis</option>
+              <option value="New Listing">New Listing</option>
             </select>
           ) : (
             <span className="bg-blue-100 text-blue-600 text-sm px-3 py-1 rounded-full">

@@ -56,7 +56,7 @@ const AppContent = () => {
               </Link>
               <Link to="/blog" className="flex items-center space-x-1 text-gray-700 hover:text-blue-600">
                 <BookOpen className="h-4 w-4" />
-                <span>Blog</span>
+                <span>Blogs</span>
               </Link>
               
               {/* Useful Tools Dropdown */}
