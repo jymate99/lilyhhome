@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://your-domain.com/sitemap.xml 
+Sitemap: https://lilyhliving.com/sitemap.xml 

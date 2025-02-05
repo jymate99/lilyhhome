@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { Home, User, BookOpen, Mail, Menu, X, MoveRight } from 'lucide-react';
+import { Home, User, BookOpen, Mail, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import HomePage from '../pages/HomePage';
 import AboutPage from '../pages/AboutPage';
