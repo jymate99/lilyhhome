@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
-import { Home, User, BookOpen, Mail, Menu, X } from 'lucide-react';
+import { Home, User, BookOpen, Mail, Menu, X, Calculator, Percent, Book, ChevronDown, Wrench } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import HomePage from '../pages/HomePage';
 import AboutPage from '../pages/AboutPage';
@@ -10,13 +10,18 @@ import LoginForm from './Auth/LoginForm';
 import NewBlogPost from '../pages/NewBlogPost';
 import ProtectedRoute from './Auth/ProtectedRoute';
 import BlogViewPage from '../pages/BlogViewPage';
+import MortgageCalculatorPage from '../pages/MortgageCalculatorPage';
+import MortgageRatePage from '../pages/MortgageRatePage';
+import HomeOwnerManualPage from '../pages/HomeOwnerManualPage';
 
 const AppContent = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleToolsMenu = () => setIsToolsMenuOpen(!isToolsMenuOpen);
 
   const handleSignOut = async () => {
     try {
@@ -53,6 +58,53 @@ const AppContent = () => {
                 <BookOpen className="h-4 w-4" />
                 <span>Blog</span>
               </Link>
+              
+              {/* Useful Tools Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={toggleToolsMenu}
+                  className="flex items-center space-x-1 text-gray-700 hover:text-blue-600 focus:outline-none"
+                >
+                  <Wrench className="h-4 w-4" />
+                  <span>Useful Tools</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isToolsMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    <div className="py-1" role="menu" aria-orientation="vertical">
+                      <Link
+                        to="/mortgage-calculator"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        onClick={() => setIsToolsMenuOpen(false)}
+                      >
+                        <Calculator className="h-4 w-4" />
+                        <span>Mortgage Calculator</span>
+                      </Link>
+                      <Link
+                        to="/mortgage-rates"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        onClick={() => setIsToolsMenuOpen(false)}
+                      >
+                        <Percent className="h-4 w-4" />
+                        <span>Mortgage Rates</span>
+                      </Link>
+                      <Link
+                        to="/homeowner-manual"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        onClick={() => setIsToolsMenuOpen(false)}
+                      >
+                        <Book className="h-4 w-4" />
+                        <span>Homeowner Manual</span>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <Link to="/contact" className="flex items-center space-x-1 text-gray-700 hover:text-blue-600">
                 <Mail className="h-4 w-4" />
                 <span>Contact</span>
@@ -118,6 +170,44 @@ const AppContent = () => {
               >
                 Blog
               </Link>
+              
+              {/* Mobile Useful Tools Section */}
+              <div className="space-y-1">
+                <div className="px-3 py-2 text-base font-medium text-gray-900">
+                  Useful Tools
+                </div>
+                <Link
+                  to="/mortgage-calculator"
+                  className="block px-6 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600"
+                  onClick={toggleMenu}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Calculator className="h-4 w-4" />
+                    <span>Mortgage Calculator</span>
+                  </div>
+                </Link>
+                <Link
+                  to="/mortgage-rates"
+                  className="block px-6 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600"
+                  onClick={toggleMenu}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Percent className="h-4 w-4" />
+                    <span>Mortgage Rates</span>
+                  </div>
+                </Link>
+                <Link
+                  to="/homeowner-manual"
+                  className="block px-6 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600"
+                  onClick={toggleMenu}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Book className="h-4 w-4" />
+                    <span>Homeowner Manual</span>
+                  </div>
+                </Link>
+              </div>
+
               <Link
                 to="/contact"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600"
@@ -157,6 +247,9 @@ const AppContent = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/mortgage-calculator" element={<MortgageCalculatorPage />} />
+          <Route path="/mortgage-rates" element={<MortgageRatePage />} />
+          <Route path="/homeowner-manual" element={<HomeOwnerManualPage />} />
           <Route 
             path="/blog/new" 
             element={
