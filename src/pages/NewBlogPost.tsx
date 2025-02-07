@@ -194,6 +194,7 @@ const NewBlogPost = () => {
               <option value="Investment">Investment</option>
               <option value="Design">Design</option>
               <option value="Market Analysis">Market Analysis</option>
+              <option value="New Listing">New Listing</option>
             </select>
           </div>
 

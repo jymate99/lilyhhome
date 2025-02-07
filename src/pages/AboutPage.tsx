@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Award, Users, Home, ThumbsUp } from 'lucide-react';
 
 function AboutPage() {

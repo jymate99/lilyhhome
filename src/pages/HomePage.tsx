@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Search, MapPin, DollarSign } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -58,36 +58,9 @@ function HomePage() {
             Find Your Dream Home
           </h1>
           <p className="text-xl text-white mb-8">
-            Discover luxury properties in prime locations
+            Discover properties in prime locations
           </p>
-          <div className="w-full max-w-3xl bg-white p-4 rounded-lg shadow-lg">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Location"
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Price Range"
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              <button className="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                <Search className="mr-2" />
-                Search
-              </button>
-            </div>
-          </div>
+          
         </div>
       </div>
 
