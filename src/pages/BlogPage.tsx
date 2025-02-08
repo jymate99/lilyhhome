@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, User, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,12 +23,16 @@ type BlogPost = {
 function BlogPage() {
   const location = useLocation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { user } = useAuth();
   const [message, setMessage] = useState<string | null>(null);
 
+  // Fetch categories and posts
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchData = async () => {
       try {
         const { data, error } = await supabase
           .from('blog_posts')
@@ -36,16 +40,38 @@ function BlogPage() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setPosts(data || []);
+
+        const posts = data || [];
+        setAllPosts(posts);
+        // Initially show only 6 most recent posts
+        setPosts(posts.slice(0, 6));
+
+        // Extract unique categories
+        const uniqueCategories = Array.from(new Set(posts.map(post => post.category)));
+        setCategories(uniqueCategories);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
+    fetchData();
   }, []);
+
+  // Filter posts by category
+  const handleCategoryClick = (category: string) => {
+    if (selectedCategory === category) {
+      // If clicking the same category, clear the filter and show 6 most recent posts
+      setSelectedCategory(null);
+      setPosts(allPosts.slice(0, 6));
+    } else {
+      setSelectedCategory(category);
+      // Show all posts in the selected category
+      const filteredPosts = allPosts.filter(post => post.category === category);
+      setPosts(filteredPosts);
+    }
+  };
 
   useEffect(() => {
     if (location.state?.message) {
@@ -91,7 +117,7 @@ function BlogPage() {
         )}
       </div>
 
-      {/* Featured Post */}
+      {/* Featured Post
       <div className="mb-16">
         <div className="relative h-[500px] rounded-lg overflow-hidden">
           <img
@@ -119,14 +145,64 @@ function BlogPage() {
             </div>
           </div>
         </div>
+      </div> */}
+
+      {/* Enhanced Category Filter */}
+      <div className="mb-12 p-6 bg-white rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Blog Categories</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryClick(category)}
+              className={`
+                group flex items-center justify-between p-2 rounded-lg border transition-all
+                hover:shadow-lg hover:border-blue-500
+                ${selectedCategory === category
+                  ? 'bg-blue-50 border-blue-500 shadow-sm'
+                  : 'bg-gray-50 border-gray-200'
+                }
+              `}
+              aria-label={`Filter by ${category}`}
+            >
+              <span className={`
+                text-lg font-medium
+                ${selectedCategory === category
+                  ? 'text-blue-700'
+                  : 'text-gray-700 group-hover:text-blue-700'
+                }
+              `}>
+                {category}
+              </span>
+              {selectedCategory === category && (
+                <X className="h-5 w-5 text-blue-700" />
+              )}
+            </button>
+          ))}
+        </div>
+        {selectedCategory ? (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-blue-800 font-medium">
+              Showing all <span className="font-bold">{posts.length}</span> posts in
+              <span className="font-bold italic"> "{selectedCategory}"</span>
+            </p>
+          </div>
+        ) : (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <p className="text-blue-800 font-medium">
+              Showing <span className="font-bold">6</span> most recent posts.
+              Select a category to see more.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Blog Posts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
         {posts.map((post) => (
-          <Link 
-            to={`/blog/${post.id}`} 
-            key={post.id} 
+          <Link
+            to={`/blog/${post.id}`}
+            key={post.id}
             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
           >
             <img
@@ -145,7 +221,7 @@ function BlogPage() {
               </div>
               <h3 className="text-xl font-bold mb-2">{post.title}</h3>
               <p className="text-gray-600 mb-4">{post.excerpt}</p>
-              
+
               {/* Property Details */}
               <div className="grid grid-cols-2 gap-4 mb-4 text-sm text-gray-600">
                 <div className="flex items-center">
