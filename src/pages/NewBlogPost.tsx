@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { uploadImage } from '../utils/imageUpload';
+import AIContentGenerator from '../components/AIContentGenerator';
 
 const NewBlogPost = () => {
   const navigate = useNavigate();
@@ -134,6 +135,16 @@ const NewBlogPost = () => {
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          <AIContentGenerator
+            onContentGenerated={(content) => {
+              setFormData({
+                ...formData,
+                content: content
+              });
+            }}
+            className="mb-4"
+          />
 
           <div>
             <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">

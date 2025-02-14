@@ -6,6 +6,7 @@ import { Calendar, Edit, Save, X, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { uploadImage } from '../utils/imageUpload';
+import AIContentGenerator from '../components/AIContentGenerator';
 
 type BlogPost = {
   id: string;
@@ -439,6 +440,15 @@ const BlogViewPage = () => {
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <AIContentGenerator
+            onContentGenerated={(content) => {
+              setEditedPost({
+                ...editedPost,
+                content: content
+              });
+            }}
+            className="mb-4"
+          />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Content (Markdown supported)</label>
             <textarea
